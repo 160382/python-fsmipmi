@@ -155,13 +155,14 @@ class IpmiUdpClient(proto.base.UdpTransport):
         self._state = self.READY
 
         is_asf = False
-        if data[0] == 0x06 and data[2] == 0xff and data[3] == 0x06:
-            payload = data[5:]
-            is_asf = True
-        elif not (data[0] == 0x06 and data[2] == 0xff and data[3] == 0x07):
+
+        if not (data[0] == 0x06 and data[2] == 0xff and data[3] == 0x07):
             # not valid IPMI
             logging.warning("{0}: Not valid IPMI".format(self._host))
             return False
+        elif data[0] == 0x06 and data[2] == 0xff and data[3] == 0x06:
+            payload = data[5:]
+            is_asf = True
 
         if not is_asf and (data[4] == 0x00 or data[4] == 0x02):
             # IPMI v1.5
